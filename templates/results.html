@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+    {% load static %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+    <div class="content">
+<h1 class ="mb-5 text-center">{{ question.question_text }}</h1>
+
+<ul class ="list-group mb-9" style="font-size: 16px;color: #1b1b1b">
+    {% for choice in question.choice_set.all %}
+    <li class ="list-group-item">
+        {{ choice.choice_text }} <span class ="badge badge-success float-right" style="margin-left: 10px;">{{ choice.votes }}
+            vote{{ choice.votes | pluralize }}</span>
+    </li>
+    {% endfor %}
+</ul>
+
+<a class ="btn btn-secondary pancakeswap" href ="{% url 'voting' %}">Back To Polls</a>
+    </div>
+
+
+
+</body>
+{% endblock %}
+
+</html>

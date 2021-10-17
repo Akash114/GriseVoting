@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Grise Voting</title>
+    <link rel ="stylesheet" href ="https://stackpath.bootstrapcdn.com / bootstrap / 4.4.1 / css / bootstrap.min.css"
+        integrity ="sha384-Vkoo8x4CGsO3 + Hhxv8T / Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin ="anonymous">
+
+      <!-- Latest JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+  <!-- Tether - a requirement for Bootstrap tooltips -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"></script>
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
+
+
+  <!-- Your stuff: Third-party javascript libraries go here -->
+  <script src="{% static 'web3auth/js/web3auth.js' %}"></script>
+  {{ block.super }}
+  <script>
+    function ready(fn) {
+      if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        fn();
+      } else {
+        document.addEventListener('DOMContentLoaded', fn);
+      }
+    }
+
+    ready(function () {
+    if (typeof web3 !== 'undefined') {
+
+            checkWeb3(function (loggedIn) {
+              if (!loggedIn) {
+                  if(web3.currentProvider.enable){
+                //For metamask
+                web3.currentProvider.enable().then(function(acc){
+                    App.account = acc[0];
+                    $("#accountAddress").html("Your Account: " + App.account);
+                    alert(web3.eth.accounts[0])
+
+                });
+            } else if(web3.eth.accounts[0]){
+                App.account = web3.eth.accounts[0];
+                $("#accountAddress").html("Your Account: " + App.account);
+                alert('Connected to Metamask Please Login')
+                      alert(web3.eth.accounts[0])
+
+            }
+                  else
+                  {
+                      alert("Please unlock your web3 provider (probably, Metamask)")
+                  }
+              }
+              else {
+                  var data = web3.eth.accounts[0]
+                          $.ajax({
+                            url: '{% url 'verification' %}',
+                            type: 'POST',
+                            data: JSON.stringify({'address':data}),
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function(data) {
+                                    alert(data.msg)
+                                }
+                            });
+              }
+            });
+          } else {
+            alert('web3 missing');
+          }
+
+    });
+  </script>
+</head>
+<body>
+<div class="content">
+    <h2 class="home_text">Welcome to</h2>
+    <h1>Grise Finance</h1><hr _ngcontent-pka-c62="" class="hr_css">
+    <h4> Give your crypto trading The Power of Ai</h4><br/>
+    <h3>We value our customers feedback.</h3>
+
+{% if latest_question_list %}
+{% for question in latest_question_list %}
+<div class ="card-mb-3" style="padding: 20px;">
+    <div class ="card-body">
+        <h3>-- {{ question.question_text }}</h3>
+
+        <a href ="{% url 'detail' question.id %}" class ="btn btn-primary pancakeswap">Vote Now</a>
+        <a href ="{% url 'results' question.id %}" class ="btn btn-secondary pancakeswap">Results</a>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+
+<p>No polls available</p>
+
+{% endif %}
+
+</div>
+</body>
+{% endblock %}
+</html>
