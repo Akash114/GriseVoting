@@ -20,6 +20,7 @@
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.9/web3.min.js"></script>`
 
   <!-- Your stuff: Third-party javascript libraries go here -->
   <script src="{% static 'web3auth/js/web3auth.js' %}"></script>
@@ -34,58 +35,54 @@
     }
 
     ready(function () {
-    if (typeof web3 !== 'undefined') {
-
-            checkWeb3(function (loggedIn) {
-              if (!loggedIn) {
-                  if(web3.currentProvider.enable){
-                //For metamask
-                web3.currentProvider.enable().then(function(acc){
-                    App.account = acc[0];
-                    $("#accountAddress").html("Your Account: " + App.account);
-                    alert(web3.eth.accounts[0])
-
-                });
-            } else if(web3.eth.accounts[0]){
-                App.account = web3.eth.accounts[0];
-                $("#accountAddress").html("Your Account: " + App.account);
-                alert('Connected to Metamask Please Login')
-                      alert(web3.eth.accounts[0])
-
-            }
-                  else
-                  {
-                      alert("Please unlock your web3 provider (probably, Metamask)")
-                  }
-              }
-              else {
-                  var data = web3.eth.accounts[0]
-                          $.ajax({
+        if (window.ethereum) {
+            web3 = new Web3(window.ethereum);
+            try {
+                window.ethereum.enable().then(function () {
+                    // User has allowed account access to DApp...
+                    promise = web3.eth.getAccounts(function (error, accounts) {
+                        console.log(accounts[0], 'current account on init');
+                        return accounts[0]
+                    });
+                    promise.then(function (account) {
+                        $.ajax({
                             url: '{% url 'verification' %}',
                             type: 'POST',
-                            data: JSON.stringify({'address':data}),
+                            data: JSON.stringify({'address': account}),
                             cache: false,
                             processData: false,
                             contentType: false,
-                            success: function(data) {
-                                    alert(data.msg)
+                            success: function (data) {
+                                if(data.balance > 0){
+                                    $('.disabled').removeClass('disabled');
                                 }
-                            });
-              }
-            });
-          } else {
-            alert('web3 missing');
-          }
-
+                            }
+                        });
+                        return true;
+                    });
+                });
+            } catch (e) {
+                alert('Please Connect MetaMsk !');
+                // User has denied account access to DApp...
+            }
+        } else {
+            alert('You have to install MetaMask !');
+        }
     });
   </script>
+<style>
+    a.disabled {
+    pointer-events:none;
+}
+
+</style>
 </head>
 <body>
 <div class="content">
     <h2 class="home_text">Welcome to</h2>
     <h1>Grise Finance</h1><hr _ngcontent-pka-c62="" class="hr_css">
     <h4> Give your crypto trading The Power of Ai</h4><br/>
-    <h3>We value our customers feedback.</h3>
+    <h3>We value our community'<s> </s> feedback.</h3>
 
 {% if latest_question_list %}
 {% for question in latest_question_list %}
@@ -93,7 +90,7 @@
     <div class ="card-body">
         <h3>-- {{ question.question_text }}</h3>
 
-        <a href ="{% url 'detail' question.id %}" class ="btn btn-primary pancakeswap">Vote Now</a>
+        <a href ="{% url 'detail' question.id %}" class ="btn btn-secondary pancakeswap disabled">Vote Now</a>
         <a href ="{% url 'results' question.id %}" class ="btn btn-secondary pancakeswap">Results</a>
     </div>
 </div>

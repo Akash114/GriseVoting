@@ -1,18 +1,13 @@
 import json
-import random
-import string
-from django.contrib.auth import login, authenticate
+import os
+
 from django.http import JsonResponse, Http404
-from django.shortcuts import render
 from web3 import Web3
-# Create your views here.
-from django.views.decorators.http import require_http_methods
-from web3auth.views import get_redirect_url
-from django.template import loader
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from .models import Question, Choice,UserInfo
+from pathlib import Path
 
 
 def voting(request):
@@ -29,12 +24,14 @@ def verification(request):
 
 
 def balance(address):
-    f = open('voting/GriseToken.json', "r")
 
+    script_location = Path(__file__).absolute().parent
+    file_location = script_location / 'GriseToken.json'
+    file = open(file_location)
     w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org:443'))
     print(w3.isConnected())
 
-    currentAbis = json.loads(f.read())
+    currentAbis = json.loads(file.read())
 
     # print(currentAbis)
     address1 = '0xb359e4290573a3974616b7c26ea86939689b9ec4'
