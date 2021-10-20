@@ -8,6 +8,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Grise Voting</title>
+    <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
+
     <link rel ="stylesheet" href ="https://stackpath.bootstrapcdn.com / bootstrap / 4.4.1 / css / bootstrap.min.css"
         integrity ="sha384-Vkoo8x4CGsO3 + Hhxv8T / Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin ="anonymous">
 
@@ -20,7 +22,7 @@
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.9/web3.min.js"></script>`
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.9/web3.min.js"></script>
 
   <!-- Your stuff: Third-party javascript libraries go here -->
   <script src="{% static 'web3auth/js/web3auth.js' %}"></script>
@@ -46,7 +48,7 @@
                     });
                     promise.then(function (account) {
                         $.ajax({
-                            url: '{% url 'verification' %}',
+                            url: '/voting/verification',
                             type: 'POST',
                             data: JSON.stringify({'address': account}),
                             cache: false,
@@ -78,6 +80,7 @@
 </style>
 </head>
 <body>
+
 <div class="content">
     <h2 class="home_text">Welcome to</h2>
     <h1>Grise Finance</h1><hr _ngcontent-pka-c62="" class="hr_css">

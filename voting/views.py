@@ -20,16 +20,17 @@ def verification(request):
     if request.is_ajax():
         data=json.loads(request.body.decode('UTF-8'))
         request.session['address'] = data['address']
-        return HttpResponse(json.dumps({'balance': balance(data['address'])}), content_type="application/json")
+        balanc = balance(data['address'])
+        return HttpResponse(json.dumps({'balance': balanc}), content_type="application/json")
+    else:
+        return HttpResponse(json.dumps({'msg': 'request type is not allowed !!'}), content_type="application/json")
 
 
-def balance(address):
-
+def balance(add):
     script_location = Path(__file__).absolute().parent
     file_location = script_location / 'GriseToken.json'
-    file = open(file_location)
+    file = open(file_location,encoding='utf-8')
     w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org:443'))
-    print(w3.isConnected())
 
     currentAbis = json.loads(file.read())
 
@@ -37,9 +38,10 @@ def balance(address):
     address1 = '0xb359e4290573a3974616b7c26ea86939689b9ec4'
 
     address = w3.toChecksumAddress(address1)
-
     contract = w3.eth.contract(address=address, abi=currentAbis['abi'])
-    token_balance = contract.functions.balanceOf(w3.toChecksumAddress(address)).call()
+
+    token_balance = contract.functions.balanceOf(w3.toChecksumAddress(add[0])).call()
+    print(token_balance)
     return token_balance
 
 
@@ -57,7 +59,6 @@ def detail(request, question_id):
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     return render(request, 'results.html', {'question': question})
-
 
 # Vote for a question choice
 
